@@ -1,0 +1,82 @@
+---
+title: "final class"
+author: "Julie_M"
+date: "2026-11-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you 
+
+```{r cars}
+#Control Structures
+#simulation=randomness
+#Generation of random numbers
+#binomial distribution,normal,random distribution
+#rnorm generate random number from standard normal distribution
+rnorm(1000) # this generate 1000 numbers whose has(0,1)mean and standard deviation 
+?exp
+?rnorm
+x<-rexp(100,2)
+hist(x)
+x<-rnorm(10)
+#Generation random number seed(this helps to have a same random number every time u run that funtion throughout whole program)
+set.seed(1)
+rnorm(5)
+#simulation Linear Model
+set.seed(20)
+#simulate predictor variable
+x<-rnorm(100)
+#simulate error term
+e<-rnorm(100,0,2)#generating random numbers whose mean is zero and standard deviation is 2
+y<-0.5-2*x+e
+plot(x,y)
+
+set.seed(1)
+sample(1:10,4)
+sample(1:10,4)#running uit again it bring different number because u haven't set a seed
+set.seed(1)
+sample(1:10,4)#brought same number as i set seed
+
+#Regression(predicting a quantitative variable)
+#simple linear regression is predicting one variable
+#it's purpose is to produce equation of prediction
+#varieties of regression analysis and their use
+#1. Polynomial regression(degree of nth order polynomial)
+#logistic(deals qualitative variables) whther someone will pass or fail
+#poison(representing counts from one or more variables) forexample how many accidents happen per day
+##More Expalanation on Linear Model
+#predict contionous variable
+# residuals are the errors in prediction 
+#All models are wrong but useful;
+#4 assumptions(normality,independence,linearlity,homoscedacity)
+#Note: these assumptions must be followed or we don't get accuracy needed
+data("women")
+#data("women*Women")
+fit <- lm(weight ~ height,data = women)
+#fit2 <- lm(weight ~ height,data = women*women)
+summary(fit)
+women$weight
+fitted(fit)
+residuals(fit)
+plot(women$height,women$weight,xlab = "height(in inches)", ylab = "weight(in pounds)")
+abline(fit)
+#lines(women$height,fitted(fit2))
+fit <- lm(weight ~ height,data = women)
+par(mfrow=c(2,2))
+plot(fit)#mfrow used for having many graphs in one diagram u specify number of columns an rows
+#when we have a certain curve for residuals vs fitted there is something wrong
+#EXPLORE MODELR PACKAGE
+#DATA VISUALIZATION
+#Data source:https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita
+#Overlapping scenario in graph is resolved by modifying position or modifying size of text
+
+```
+
