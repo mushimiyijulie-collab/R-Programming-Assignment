@@ -1,0 +1,179 @@
+---
+title: "Multiple linear regression"
+author: "Julie_M"
+date: "2026-11-22"
+output: html_document
+---
+
+```{r}
+#Import Dataset
+student <- read.csv(file.choose())
+View(student)
+#install.packages("car")
+
+#Display first 10 rows
+head(student,10)
+
+#Check the structure
+str(student)
+
+#Check the dimensions
+dim(student)
+
+#Check summary statistics
+summary(student)
+
+#Check missing values
+colSums(is.na(student))
+
+#Check duplicate rows
+sum(duplicated(student))
+
+#HANDLING DUPLICATES
+
+# Create a cleaned dataset by removing duplicates
+student_clean <- student[!duplicated(student), ]
+
+# Check the new dimensions
+dim(student_clean)
+
+# Confirm that duplicates have been removed
+sum(duplicated(student_clean))
+
+# Convert extracurricular activities Variable into a factor as it is categorical, not continuous numerical measurement.
+
+student_clean$Extracurricular.Activities <- as.factor(
+  student_clean$Extracurricular.Activities
+)
+
+# Check the variable type
+str(student_clean)
+
+# Count students in each category
+table(student_clean$Extracurricular.Activities)
+
+#Before multiple linear regression,First we look for the relationships between our variables.
+
+# Check the distribution of student performance
+
+hist(student_clean$Performance.Index,
+     main = "Distribution of Student Performance",
+     xlab = "Performance Index",
+     col = "lightblue",
+     border = "black")
+
+# Calculate the average performance
+mean(student_clean$Performance.Index)
+
+# Calculate the median performance
+median(student_clean$Performance.Index)
+
+# Calculate the standard deviation
+sd(student_clean$Performance.Index)
+
+# Scatter plots for numeric predictors
+par(mfrow = c(2, 2))
+plot(student_clean$Hours.Studied, student_clean$Performance.Index,
+     xlab = "Hours Studied", ylab = "Performance Index",
+     main = "Hours Studied", pch = 19, col = rgb(0, 0, 1, 0.2))
+abline(lm(Performance.Index ~ Hours.Studied, data = student_clean), col = "red", lwd = 2)
+
+plot(student_clean$Previous.Scores, student_clean$Performance.Index,
+     xlab = "Previous Scores", ylab = "Performance Index",
+     main = "Previous Scores", pch = 19, col = rgb(0, 0, 1, 0.2))
+abline(lm(Performance.Index ~ Previous.Scores, data = student_clean), col = "red", lwd = 2)
+
+plot(student_clean$Sleep.Hours, student_clean$Performance.Index,
+     xlab = "Sleep Hours", ylab = "Performance Index",
+     main = "Sleep Hours", pch = 19, col = rgb(0, 0, 1, 0.2))
+abline(lm(Performance.Index ~ Sleep.Hours, data = student_clean), col = "red", lwd = 2)
+
+plot(student_clean$Sample.Question.Papers.Practiced, student_clean$Performance.Index,
+     xlab = "Papers Practiced", ylab = "Performance Index",
+     main = "Papers Practiced", pch = 19, col = rgb(0, 0, 1, 0.2))
+abline(lm(Performance.Index ~ Sample.Question.Papers.Practiced, data = student_clean), col = "red", lwd = 2)
+par(mfrow = c(1, 1))
+
+# Categorical predictor: boxplot
+boxplot(Performance.Index ~ Extracurricular.Activities, data = student_clean,
+        xlab = "Extracurricular Activities", ylab = "Performance Index",
+        main = "Performance by Extracurricular Activities", col = c("lightblue", "lightgreen"))
+
+# Average performance by study hours
+aggregate(Performance.Index ~ Hours.Studied, data = student_clean, FUN = mean)
+num_vars <- student_clean[, c("Hours.Studied", "Previous.Scores", "Sleep.Hours",
+                              "Sample.Question.Papers.Practiced", "Performance.Index")]
+round(cor(num_vars), 3)
+
+model <- lm(Performance.Index ~ Hours.Studied + Previous.Scores +
+              Extracurricular.Activities + Sleep.Hours +
+              Sample.Question.Papers.Practiced,
+            data = student_clean)
+
+summary(model)
+confint(model)
+par(mfrow = c(2, 2))
+plot(model)
+par(mfrow = c(1, 1))
+
+# Multicollinearity
+library(car)      
+vif(model)# As VIF values are approximately 1 which is below the commonly used threshold of 5,thus there is no evidence of problematic multicollinearity among the independent variables.
+
+#Checking Independence of errors using Durbin-Watson test 
+# Install the package
+#install.packages("lmtest")
+
+# Load the package
+library(lmtest)
+
+# Perform Durbin-Watson test
+dwtest(model)
+# Perform the Breusch-Godfrey test
+bgtest(model, order = 1)
+
+# CHECKING HOMOSCEDASTICITY
+
+# Perform the Breusch-Pagan test
+bptest(model)
+
+# CHECKING MODEL SPECIFICATION
+
+# Perform Ramsey RESET test
+resettest(model)
+
+# CHECKING INFLUENTIAL OBSERVATIONS
+
+# Calculate Cook's Distance
+cooks_distance <- cooks.distance(model)
+
+# Plot Cook's Distance
+plot(cooks_distance,
+     type = "h",
+     main = "Cook's Distance",
+     ylab = "Cook's Distance",
+     xlab = "Observation")
+
+graphics.off()      
+par(mfrow = c(1, 1))
+ par(mfrow = c(1, 1))
+plot(Performance.Index ~ Hours.Studied, data = student_clean,
+     pch = 19, col = rgb(0, 0, 1, 0.2),
+     xlab = "Hours Studied", ylab = "Performance Index",
+     main = "Hours Studied")
+abline(lm(Performance.Index ~ Hours.Studied, data = student_clean),
+       col = "red", lwd = 2)
+summary(model)
+```
+### Interpretation of Results
+
+The multiple linear regression analysis revealed a strong positive relationship between student performance and the five selected independent variables: hours studied, previous scores, extracurricular activities, sleep hours, and sample question papers practiced.
+
+All five predictors were statistically significant at the 5% significance level. The model achieved an R-squared of 98.87%, indicating that the selected variables explain a substantial proportion of the variation in student performance.
+
+The diagnostic tests showed no evidence of problematic multicollinearity, positive autocorrelation, serial correlation up to order 1, or heteroscedasticity.
+
+However, the Ramsey RESET test indicated a potential model specification problem, suggesting that further investigation into the functional form and possible nonlinear relationships is necessary.
+
+Overall, the model demonstrates strong explanatory power and identifies important variables associated with student performance. Nevertheless, the specification issue should be investigated before the model is considered fully adequate for statistical inference or prediction.
+
