@@ -1,0 +1,89 @@
+---
+title: "Statistics"
+author: "Julie_M"
+date: "2026-11-22"
+output: html_document
+---
+
+```{r}
+# Create a sample variable containing students' marks
+marks <- c(60, 70, 80, 85, 90, 75, 65, 95, 100, 80)
+
+# Display the variable
+print(marks)
+
+# a function that calculates mean
+calculate_mean <- function(x) {
+  mean(x)
+}
+# a function to calculate median
+calculate_median <- function(x) {
+  median(x)
+}
+
+# a function to calculate minimum value
+calculate_min <- function(x) {
+  min(x)
+}
+# a function to calculate maximum value
+calculate_max <- function(x) {
+  max(x)
+}
+# Create a function to calculate standard deviation
+calculate_sd <- function(x) {
+  sd(x)
+}
+# Apply functions to the marks variable
+calculate_mean(marks)
+calculate_median(marks)
+calculate_min(marks)
+calculate_max(marks)
+calculate_sd(marks)
+
+# Create a function for all summary statistics
+
+summary_stats <- function(x) {
+
+  results <- c(
+    Mean = mean(x),
+    Median = median(x),
+    Minimum = min(x),
+    Maximum = max(x),
+    Standard_Deviation = sd(x)
+  )
+
+  return(results)
+}
+
+# Apply the function to marks
+summary_stats(marks)
+summary_stats <- function(x) {
+  get_mode <- function(v) {
+    t <- table(v)
+    as.numeric(names(t)[t == max(t)])
+  }
+
+  results <- list(
+    N = length(x),
+    Mean = mean(x),
+    Median = median(x),
+    Mode = get_mode(x),
+    Minimum = min(x),
+    Maximum = max(x),
+    Range = diff(range(x)),
+    Q1 = unname(quantile(x, 0.25)),
+    Q3 = unname(quantile(x, 0.75)),
+    IQR = IQR(x),
+    Variance = var(x),
+    Standard_Deviation = sd(x),
+    CV_percent = sd(x) / mean(x) * 100
+  )
+
+  return(results)
+}
+
+summary_stats(marks)
+
+
+```
+
